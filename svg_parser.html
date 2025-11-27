@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SVG Path Animator (Fixed)</title>
+    <style>
+      body {
+        font-family: sans-serif;
+        padding: 20px;
+      }
+      textarea {
+        width: 100%;
+        height: 150px;
+      }
+      svg {
+        width: 100%;
+        height: auto;
+        border: 1px solid #ccc;
+        margin-top: 20px;
+      }
+    </style>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <h2>SVG Path Animator</h2>
+    <p>Paste SVG paths (one per line):</p>
+    <textarea id="pathsInput"></textarea>
+    <br /><br />
+    <button id="generateBtn">Generate & Animate</button>
+
+    <svg
+      id="svgCanvas"
+      width="200"
+      height="200"
+      viewBox="0 0 200 200"
+      xmlns="http://www.w3.org/2000/svg"
+    ></svg>
+
+    <h3>Generated SVG Code:</h3>
+    <pre
+      id="svgOutput"
+      style="
+        white-space: pre-wrap;
+        background: #f4f4f4;
+        padding: 10px;
+        border: 1px solid #ccc;
+      "
+    ></pre>
+
+    <script>
+      document.getElementById("generateBtn").addEventListener("click", () => {
+        const svg = document.getElementById("svgCanvas");
+        svg.innerHTML = "";
+
+        const input = document.getElementById("pathsInput").value.trim();
+        if (!input) return;
+
+        const pathStrings = input.split(/\n+/);
+
+        pathStrings.forEach((line, i) => {
+          const parser = new DOMParser();
+          const doc = parser.parseFromString(
+            `<svg>${line}</svg>`,
+            "image/svg+xml"
+          );
+          const parsed = doc.querySelector("path");
+          if (!parsed) return;
+
+          const imported = document.createElementNS(
+            "http://www.w3.org/2000/svg",
+            "path"
+          );
+          for (const attr of parsed.attributes) {
+            imported.setAttribute(attr.name, attr.value);
+          }
+
+          svg.appendChild(imported);
+
+          if (typeof imported.getTotalLength !== "function") return;
+          const length = imported.getTotalLength();
+
+          imported.setAttribute("stroke-dasharray", length);
+          imported.setAttribute("stroke-dashoffset", length);
+          imported.setAttribute("stroke-width", "2");
+
+          const anim = document.createElementNS(
+            "http://www.w3.org/2000/svg",
+            "animate"
+          );
+          anim.setAttribute("attributeName", "stroke-dashoffset");
+          anim.setAttribute("from", length.toString());
+          anim.setAttribute("to", "0");
+          anim.setAttribute("dur", "0.25s");
+          anim.setAttribute("fill", "freeze");
+          anim.setAttribute("id", `b_anim${i + 1}`);
+          anim.setAttribute("begin", i === 0 ? "0s" : `b_anim${i}.end`);
+
+          imported.appendChild(anim);
+        });
+
+        function formatXml(xml) {
+          return xml.replace(/></g, ">\n<").trim();
+        }
+
+        const rawSvg = svg.outerHTML;
+        const svgMarkup = formatXml(rawSvg);
+        document.getElementById("svgOutput").textContent = svgMarkup;
+      });
+    </script>
+  </body>
+</html>

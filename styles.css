@@ -1,0 +1,92 @@
+svg .wheel1, svg .wheel2 {
+    -webkit-animation-name: spin;
+    -webkit-animation-duration: 800ms;
+    -webkit-animation-iteration-count: 1;
+    -webkit-animation-timing-function: ease-out;
+}
+
+
+#simple_wheels {display: none;}
+/* #detailed_wheels {display: none;} */
+
+@-webkit-keyframes spin {
+    from { -webkit-transform: rotate(0deg); 
+	    -webkit-transform-origin:50% 50%;
+    }
+    to { -webkit-transform: rotate(-720deg); 
+	    -webkit-transform-origin:50% 50%;
+    }
+}
+@-webkit-keyframes move {
+    from {
+    -webkit-transform: translate(800px, 0); 
+    }
+    to {
+    -webkit-transform: translate(0px, 0); 
+    }
+}
+@-webkit-keyframes bounce {
+    0% {
+	 -webkit-transform: translate(0, 0) rotateZ(-0deg);     }
+    50% {
+	 -webkit-transform: translate(-2.5px, .5px) rotateZ(-1deg);     }
+    100% {
+	 -webkit-transform: translate(0, 0) rotateZ(-0deg);     }
+}
+.wheel {fill:#666;}
+@-webkit-keyframes brakes {
+    50% {
+	fill: #f00;}
+    80% {
+	fill: #f00;}
+    100% {
+	fill: #fff;}
+}
+
+@-webkit-keyframes headlights {
+    0% {
+	fill: #ff0;}
+    30% {
+	fill: #ff0;}
+    31% {
+	 fill:#fff;}
+    50% {
+	 fill:#fff;}
+    51% {
+	fill: #ff0;}
+	 
+}
+
+
+
+
+svg {width: 640px; height: 640px;}
+
+#Layer_1_1_ {fill:#000; stroke:#999; stroke-width:.1;
+    -webkit-animation-name: bounce;
+    -webkit-animation-duration: 300ms;
+    -webkit-animation-iteration-count: 1;
+    -webkit-animation-timing-function: linear;
+    -webkit-animation-delay: 700ms;
+    
+
+}
+#brake {
+	    -webkit-animation-name: brakes;
+    -webkit-animation-duration: 1000ms;
+    -webkit-animation-iteration-count: 1;
+    -webkit-animation-timing-function: linear;
+    -webkit-animation-delay: 300ms;
+
+	
+	
+}
+#headlight {fill:#fff;
+		    -webkit-animation-name: headlights;
+    -webkit-animation-duration: 1000ms;
+    -webkit-animation-iteration-count: 1;
+    -webkit-animation-timing-function: linear;
+    -webkit-animation-delay: 1500ms;
+
+}
+
