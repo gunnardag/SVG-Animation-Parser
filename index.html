@@ -57,16 +57,25 @@
         const input = document.getElementById("pathsInput").value.trim();
         if (!input) return;
 
-        const pathStrings = input.split(/\n+/);
+        const parser = new DOMParser();
+        let paths = [];
+        if (/<svg[\s>]/i.test(input)) {
+          const doc = parser.parseFromString(input, "image/svg+xml");
+          paths = Array.from(doc.querySelectorAll("path"));
+        } else {
+          const pathStrings = input.split(/\n+/);
+          paths = pathStrings
+            .map((line) => {
+              const doc = parser.parseFromString(
+                `<svg>${line}</svg>`,
+                "image/svg+xml"
+              );
+              return doc.querySelector("path");
+            })
+            .filter(Boolean);
+        }
 
-        pathStrings.forEach((line, i) => {
-          const parser = new DOMParser();
-          const doc = parser.parseFromString(
-            `<svg>${line}</svg>`,
-            "image/svg+xml"
-          );
-          const parsed = doc.querySelector("path");
-          if (!parsed) return;
+        paths.forEach((parsed, i) => {
 
           const imported = document.createElementNS(
             "http://www.w3.org/2000/svg",
