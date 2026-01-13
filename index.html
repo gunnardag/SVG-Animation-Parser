@@ -20,7 +20,7 @@
         margin-top: 20px;
       }
     </style>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
     <h2>SVG Path Animator</h2>
@@ -29,6 +29,7 @@
     <br /><br />
     <button id="generateBtn">Generate & Animate</button>
 
+    <br /><br />
     <svg
       id="svgCanvas"
       width="200"
@@ -83,6 +84,8 @@
           imported.setAttribute("stroke-dasharray", length);
           imported.setAttribute("stroke-dashoffset", length);
           imported.setAttribute("stroke-width", "2");
+          imported.setAttribute("fill", "none");
+          imported.setAttribute("stroke", "currentColor");
 
           const anim = document.createElementNS(
             "http://www.w3.org/2000/svg",
@@ -97,7 +100,25 @@
           anim.setAttribute("begin", i === 0 ? "0s" : `b_anim${i}.end`);
 
           imported.appendChild(anim);
+
+          if (typeof anim.beginElement !== "function") {
+            anim.remove();
+            imported.animate(
+              [{ strokeDashoffset: length }, { strokeDashoffset: 0 }],
+              {
+                duration: 250,
+                delay: i * 250,
+                fill: "forwards",
+                easing: "linear",
+              }
+            );
+          }
         });
+
+        const firstAnim = svg.querySelector("animate");
+        if (firstAnim && typeof firstAnim.beginElement === "function") {
+          firstAnim.beginElement();
+        }
 
         function formatXml(xml) {
           return xml.replace(/></g, ">\n<").trim();
