@@ -1,6 +1,14 @@
 const svg = document.getElementById("drawingArea");
 let drawing = false;
 let currentPath = null;
+const inputField = document.getElementById("pathsInput");
+
+function updateInputFromDrawing() {
+  if (!svg || !inputField) return;
+  const rawSvg = svg.outerHTML;
+  const formatted = rawSvg.replace(/></g, ">\n<").trim();
+  inputField.value = formatted;
+}
 
 svg.addEventListener("mousedown", (e) => {
   drawing = true;
@@ -9,7 +17,7 @@ svg.addEventListener("mousedown", (e) => {
 
   currentPath = document.createElementNS("http://www.w3.org/2000/svg", "path");
   currentPath.setAttribute("d", `M${x} ${y}`);
-  currentPath.setAttribute("stroke", "blue");
+  currentPath.setAttribute("stroke", "black");
   currentPath.setAttribute("fill", "none");
   currentPath.setAttribute("stroke-width", "2");
 
@@ -29,11 +37,13 @@ svg.addEventListener("mousemove", (e) => {
 svg.addEventListener("mouseup", () => {
   drawing = false;
   currentPath = null;
+  updateInputFromDrawing();
 });
 
 svg.addEventListener("mouseleave", () => {
   drawing = false;
   currentPath = null;
+  updateInputFromDrawing();
 });
 
 document.getElementById("generateBtn").addEventListener("click", () => {
