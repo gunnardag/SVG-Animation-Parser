@@ -21,7 +21,12 @@ body {
   font-family: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Palatino,
     serif;
   color: var(--ink);
-  background: radial-gradient(circle at top, #fff6e8 0%, #f2e4d4 45%, #e6d0b8 100%);
+  background: radial-gradient(
+    circle at top,
+    #fff6e8 0%,
+    #f2e4d4 45%,
+    #e6d0b8 100%
+  );
 }
 
 body::before,
@@ -30,9 +35,17 @@ body::after {
   position: fixed;
   inset: 0;
   pointer-events: none;
-  background: radial-gradient(circle at 15% 20%, rgba(15, 118, 110, 0.16), transparent 50%),
+  background: radial-gradient(
+      circle at 15% 20%,
+      rgba(15, 118, 110, 0.16),
+      transparent 50%
+    ),
     radial-gradient(circle at 85% 25%, rgba(234, 88, 12, 0.18), transparent 55%),
-    radial-gradient(circle at 30% 80%, rgba(124, 58, 237, 0.12), transparent 60%);
+    radial-gradient(
+      circle at 30% 80%,
+      rgba(124, 58, 237, 0.12),
+      transparent 60%
+    );
   opacity: 0.8;
   z-index: -2;
 }
@@ -159,6 +172,10 @@ button {
 h2 {
   margin: 0;
   font-size: 1.3rem;
+}
+
+.drawingAreaDiv {
+  background: #fff;
 }
 
 .panel__header p {

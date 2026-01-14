@@ -27,12 +27,23 @@
         </div>
       </header>
 
-      <section class="panel">
-        <div class="panel__header">
-          <h2>Input</h2>
-          <p>Paste SVG paths (one per line) or a full SVG.</p>
-        </div>
-        <textarea id="pathsInput" class="panel__input"></textarea>
+      <section class="grid">
+        <section class="panel">
+          <div class="panel__header">
+            <h2>Draw your own</h2>
+            <p>Draw freehand your own path.</p>
+          </div>
+          <div id="drawingAreaDiv">
+            <svg id="drawingArea"></svg>
+          </div>
+        </section>
+        <section class="panel">
+          <div class="panel__header">
+            <h2>Input</h2>
+            <p>Paste SVG paths (one per line) or a full SVG.</p>
+          </div>
+          <textarea id="pathsInput" class="panel__input"></textarea>
+        </section>
       </section>
 
       <section class="grid">
