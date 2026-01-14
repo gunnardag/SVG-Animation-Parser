@@ -24,15 +24,48 @@
           <button id="generateSmoothBtn" class="ghost-btn">
             Generate, Smooth & Animate
           </button>
+          <label class="field">
+            <span>Curve Samples</span>
+            <input
+              id="curveSamples"
+              type="number"
+              min="1"
+              step="1"
+              value="25"
+            />
+          </label>
+          <label class="field">
+            <span>Window Size</span>
+            <input id="windowSize" type="number" min="1" step="1" value="10" />
+          </label>
         </div>
       </header>
 
-      <section class="panel">
-        <div class="panel__header">
-          <h2>Input</h2>
-          <p>Paste SVG paths (one per line) or a full SVG.</p>
-        </div>
-        <textarea id="pathsInput" class="panel__input"></textarea>
+      <section class="grid">
+        <section class="panel">
+          <div class="panel__header">
+            <h2>Draw your own</h2>
+            <p>Draw freehand your own path.</p>
+          </div>
+          <div id="drawingAreaDiv" class="drawing-area">
+            <button id="clearDrawingBtn" class="clear-btn" type="button">
+              X
+            </button>
+            <svg
+              id="drawingArea"
+              xmlns="http://www.w3.org/2000/svg"
+              width="200"
+              height="200"
+            ></svg>
+          </div>
+        </section>
+        <section class="panel">
+          <div class="panel__header">
+            <h2>Input</h2>
+            <p>Paste SVG paths (one per line) or a full SVG.</p>
+          </div>
+          <textarea id="pathsInput" class="panel__input"></textarea>
+        </section>
       </section>
 
       <section class="grid">

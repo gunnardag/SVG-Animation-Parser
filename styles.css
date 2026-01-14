@@ -21,7 +21,12 @@ body {
   font-family: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Palatino,
     serif;
   color: var(--ink);
-  background: radial-gradient(circle at top, #fff6e8 0%, #f2e4d4 45%, #e6d0b8 100%);
+  background: radial-gradient(
+    circle at top,
+    #fff6e8 0%,
+    #f2e4d4 45%,
+    #e6d0b8 100%
+  );
 }
 
 body::before,
@@ -30,9 +35,17 @@ body::after {
   position: fixed;
   inset: 0;
   pointer-events: none;
-  background: radial-gradient(circle at 15% 20%, rgba(15, 118, 110, 0.16), transparent 50%),
+  background: radial-gradient(
+      circle at 15% 20%,
+      rgba(15, 118, 110, 0.16),
+      transparent 50%
+    ),
     radial-gradient(circle at 85% 25%, rgba(234, 88, 12, 0.18), transparent 55%),
-    radial-gradient(circle at 30% 80%, rgba(124, 58, 237, 0.12), transparent 60%);
+    radial-gradient(
+      circle at 30% 80%,
+      rgba(124, 58, 237, 0.12),
+      transparent 60%
+    );
   opacity: 0.8;
   z-index: -2;
 }
@@ -89,6 +102,7 @@ h1 {
   display: flex;
   flex-wrap: wrap;
   gap: 12px;
+  align-items: flex-end;
 }
 
 button {
@@ -98,6 +112,27 @@ button {
   font-weight: 600;
   letter-spacing: 0.02em;
   transition: transform 120ms ease, box-shadow 120ms ease;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--muted);
+}
+
+.field input {
+  width: 110px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  border: 1px solid rgba(28, 26, 22, 0.2);
+  font-family: "Trebuchet MS", "Gill Sans", "Lucida Grande", sans-serif;
+  font-size: 0.95rem;
+  color: var(--ink);
+  background: #fff;
 }
 
 .primary-btn,
@@ -161,6 +196,10 @@ h2 {
   font-size: 1.3rem;
 }
 
+.drawingAreaDiv {
+  background: #fff;
+}
+
 .panel__header p {
   margin: 0;
   color: var(--muted);
@@ -220,6 +259,49 @@ h2 {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.drawing-area {
+  padding: 12px;
+  border-radius: 16px;
+  border: 1px dashed rgba(28, 26, 22, 0.25);
+  background: #fff;
+  position: relative;
+  width: 200px;
+  height: 200px;
+  display: flex;
+  align-items: stretch;
+}
+
+.clear-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(28, 26, 22, 0.2);
+  color: var(--accent-strong);
+  box-shadow: 0 6px 12px rgba(28, 26, 22, 0.12);
+  z-index: 2;
+}
+
+.clear-btn:hover {
+  transform: translateY(-1px);
+}
+
+#drawingArea {
+  width: 100%;
+  height: 100%;
+  border-radius: 12px;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(28, 26, 22, 0.04),
+    rgba(28, 26, 22, 0.04) 1px,
+    transparent 1px,
+    transparent 22px
+  );
 }
 
 svg {

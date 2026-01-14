@@ -1,3 +1,61 @@
+const svg = document.getElementById("drawingArea");
+let drawing = false;
+let currentPath = null;
+const inputField = document.getElementById("pathsInput");
+const clearButton = document.getElementById("clearDrawingBtn");
+
+function updateInputFromDrawing() {
+  if (!svg || !inputField) return;
+  const rawSvg = svg.outerHTML;
+  const formatted = rawSvg.replace(/></g, ">\n<").trim();
+  inputField.value = formatted;
+}
+
+if (clearButton) {
+  clearButton.addEventListener("click", () => {
+    svg.innerHTML = "";
+    currentPath = null;
+    drawing = false;
+    updateInputFromDrawing();
+  });
+}
+
+svg.addEventListener("mousedown", (e) => {
+  drawing = true;
+  const x = e.offsetX;
+  const y = e.offsetY;
+
+  currentPath = document.createElementNS("http://www.w3.org/2000/svg", "path");
+  currentPath.setAttribute("d", `M${x} ${y}`);
+  currentPath.setAttribute("stroke", "black");
+  currentPath.setAttribute("fill", "none");
+  currentPath.setAttribute("stroke-width", "2");
+
+  svg.appendChild(currentPath);
+});
+
+svg.addEventListener("mousemove", (e) => {
+  if (!drawing) return;
+  const x = e.offsetX;
+  const y = e.offsetY;
+
+  let d = currentPath.getAttribute("d");
+  d += ` L${x} ${y}`;
+  currentPath.setAttribute("d", d);
+});
+
+svg.addEventListener("mouseup", () => {
+  drawing = false;
+  currentPath = null;
+  updateInputFromDrawing();
+});
+
+svg.addEventListener("mouseleave", () => {
+  drawing = false;
+  currentPath = null;
+  updateInputFromDrawing();
+});
+
 document.getElementById("generateBtn").addEventListener("click", () => {
   const svg = document.getElementById("svgCanvas");
   svg.innerHTML = "";
@@ -110,6 +168,11 @@ document.getElementById("generateSmoothBtn").addEventListener("click", () => {
       .filter(Boolean);
   }
 
+  const curveSamplesInput = document.getElementById("curveSamples");
+  const windowSizeInput = document.getElementById("windowSize");
+  const curveSamples = Number.parseInt(curveSamplesInput?.value, 10) || 25;
+  const windowSize = Number.parseInt(windowSizeInput?.value, 10) || 8;
+
   paths.forEach((parsed, i) => {
     const imported = document.createElementNS(
       "http://www.w3.org/2000/svg",
@@ -120,8 +183,8 @@ document.getElementById("generateSmoothBtn").addEventListener("click", () => {
         imported.setAttribute(
           attr.name,
           smoothSvgPath(attr.value, {
-            curveSamples: 25,
-            windowSize: 75,
+            curveSamples,
+            windowSize,
           })
         );
       } else {
@@ -219,37 +282,48 @@ function cubicBezier(p0, p1, p2, p3, t) {
   const mt = 1 - t;
   return {
     x:
-      mt ** 3 * p0.x +
-      3 * mt ** 2 * t * p1.x +
-      3 * mt * t ** 2 * p2.x +
-      t ** 3 * p3.x,
+      mt * mt * mt * p0.x +
+      3 * mt * mt * t * p1.x +
+      3 * mt * t * t * p2.x +
+      t * t * t * p3.x,
     y:
-      mt ** 3 * p0.y +
-      3 * mt ** 2 * t * p1.y +
-      3 * mt * t ** 2 * p2.y +
-      t ** 3 * p3.y,
+      mt * mt * mt * p0.y +
+      3 * mt * mt * t * p1.y +
+      3 * mt * t * t * p2.y +
+      t * t * t * p3.y,
   };
 }
 
-function flattenSvgPath(path, segmentsPerCurve = 20) {
-  const tokens = path.match(/[a-zA-Z]|-?\d*\.?\d+/g);
-  const points = [];
+function flattenSvgPath(d, curveSamples = 20) {
+  const tokens = d.match(/[a-zA-Z]|-?\d*\.?\d+/g);
+  if (!tokens) return [];
 
   let i = 0;
   let x = 0,
     y = 0;
+  const points = [];
 
   while (i < tokens.length) {
     const cmd = tokens[i++];
 
-    if (cmd === "m") {
+    // Absolute move / line
+    if (cmd === "M" || cmd === "L") {
+      x = parseFloat(tokens[i++]);
+      y = parseFloat(tokens[i++]);
+      points.push({ x, y });
+    }
+
+    // Relative move
+    else if (cmd === "m") {
       x += parseFloat(tokens[i++]);
       y += parseFloat(tokens[i++]);
       points.push({ x, y });
-    } else if (cmd === "c") {
+    }
+
+    // Cubic Bézier (relative)
+    else if (cmd === "c") {
       while (i + 5 < tokens.length && !isNaN(tokens[i])) {
         const p0 = { x, y };
-
         const p1 = {
           x: x + parseFloat(tokens[i++]),
           y: y + parseFloat(tokens[i++]),
@@ -263,7 +337,8 @@ function flattenSvgPath(path, segmentsPerCurve = 20) {
           y: y + parseFloat(tokens[i++]),
         };
 
-        for (let t = 0; t <= 1; t += 1 / segmentsPerCurve) {
+        for (let s = 1; s <= curveSamples; s++) {
+          const t = s / curveSamples;
           points.push(cubicBezier(p0, p1, p2, p3, t));
         }
 
@@ -278,6 +353,7 @@ function flattenSvgPath(path, segmentsPerCurve = 20) {
 
 function movingAverage(points, windowSize = 7) {
   const half = Math.floor(windowSize / 2);
+
   return points.map((_, i) => {
     let sx = 0,
       sy = 0,
@@ -298,14 +374,15 @@ function movingAverage(points, windowSize = 7) {
 function pointsToPath(points) {
   if (!points.length) return "";
   let d = `M ${points[0].x.toFixed(2)} ${points[0].y.toFixed(2)}`;
+
   for (let i = 1; i < points.length; i++) {
     d += ` L ${points[i].x.toFixed(2)} ${points[i].y.toFixed(2)}`;
   }
   return d;
 }
 
-function smoothSvgPath(path, { curveSamples = 20, windowSize = 7 } = {}) {
-  const rawPoints = flattenSvgPath(path, curveSamples);
-  const smoothPoints = movingAverage(rawPoints, windowSize);
-  return pointsToPath(smoothPoints);
+function smoothSvgPath(d, { curveSamples = 25, windowSize = 7 } = {}) {
+  const points = flattenSvgPath(d, curveSamples);
+  const smooth = movingAverage(points, windowSize);
+  return pointsToPath(smooth);
 }
