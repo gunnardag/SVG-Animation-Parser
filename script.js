@@ -182,6 +182,39 @@ document.getElementById("generateSmoothBtn").addEventListener("click", () => {
   document.getElementById("svgOutput").textContent = svgMarkup;
 });
 
+const copyButton = document.getElementById("copySvgBtn");
+if (copyButton) {
+  copyButton.addEventListener("click", async () => {
+    const svgOutput = document.getElementById("svgOutput");
+    const text = svgOutput ? svgOutput.textContent.trim() : "";
+    if (!text) return;
+
+    try {
+      if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(text);
+      } else {
+        const temp = document.createElement("textarea");
+        temp.value = text;
+        temp.setAttribute("readonly", "");
+        temp.style.position = "absolute";
+        temp.style.left = "-9999px";
+        document.body.appendChild(temp);
+        temp.select();
+        document.execCommand("copy");
+        document.body.removeChild(temp);
+      }
+      copyButton.classList.add("copied");
+      copyButton.setAttribute("aria-label", "Copied");
+      window.setTimeout(() => {
+        copyButton.classList.remove("copied");
+        copyButton.setAttribute("aria-label", "Copy SVG");
+      }, 300);
+    } catch (error) {
+      console.error("Copy failed", error);
+    }
+  });
+}
+
 function cubicBezier(p0, p1, p2, p3, t) {
   const mt = 1 - t;
   return {
