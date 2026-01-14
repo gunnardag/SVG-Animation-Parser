@@ -4,6 +4,16 @@ let currentPath = null;
 const inputField = document.getElementById("pathsInput");
 const clearButton = document.getElementById("clearDrawingBtn");
 
+function getSvgPoint(event) {
+  const rect = svg.getBoundingClientRect();
+  const x = ((event.clientX - rect.left) / rect.width) * 200;
+  const y = ((event.clientY - rect.top) / rect.height) * 200;
+  return {
+    x: Math.max(0, Math.min(200, x)),
+    y: Math.max(0, Math.min(200, y)),
+  };
+}
+
 function updateInputFromDrawing() {
   if (!svg || !inputField) return;
   const rawSvg = svg.outerHTML;
@@ -22,8 +32,7 @@ if (clearButton) {
 
 svg.addEventListener("mousedown", (e) => {
   drawing = true;
-  const x = e.offsetX;
-  const y = e.offsetY;
+  const { x, y } = getSvgPoint(e);
 
   currentPath = document.createElementNS("http://www.w3.org/2000/svg", "path");
   currentPath.setAttribute("d", `M${x} ${y}`);
@@ -36,8 +45,7 @@ svg.addEventListener("mousedown", (e) => {
 
 svg.addEventListener("mousemove", (e) => {
   if (!drawing) return;
-  const x = e.offsetX;
-  const y = e.offsetY;
+  const { x, y } = getSvgPoint(e);
 
   let d = currentPath.getAttribute("d");
   d += ` L${x} ${y}`;

@@ -233,7 +233,7 @@ h2 {
 
 .panel__input {
   width: 100%;
-  min-height: 160px;
+  min-height: 260px;
   border-radius: 16px;
   border: 1px solid rgba(28, 26, 22, 0.18);
   padding: 14px;
@@ -267,8 +267,8 @@ h2 {
   border: 1px dashed rgba(28, 26, 22, 0.25);
   background: #fff;
   position: relative;
-  width: 200px;
-  height: 200px;
+  width: min(100%, 320px);
+  aspect-ratio: 1 / 1;
   display: flex;
   align-items: stretch;
 }
