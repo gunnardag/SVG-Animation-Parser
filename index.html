@@ -28,7 +28,7 @@
     <textarea id="pathsInput"></textarea>
     <br /><br />
     <button id="generateBtn">Generate & Animate</button>
-
+    <button id="generateSmoothBtn">Generate, Smooth & Animate</button>
     <br /><br />
     <svg
       id="svgCanvas"
@@ -49,94 +49,6 @@
       "
     ></pre>
 
-    <script>
-      document.getElementById("generateBtn").addEventListener("click", () => {
-        const svg = document.getElementById("svgCanvas");
-        svg.innerHTML = "";
-
-        const input = document.getElementById("pathsInput").value.trim();
-        if (!input) return;
-
-        const parser = new DOMParser();
-        let paths = [];
-        if (/<svg[\s>]/i.test(input)) {
-          const doc = parser.parseFromString(input, "image/svg+xml");
-          paths = Array.from(doc.querySelectorAll("path"));
-        } else {
-          const pathStrings = input.split(/\n+/);
-          paths = pathStrings
-            .map((line) => {
-              const doc = parser.parseFromString(
-                `<svg>${line}</svg>`,
-                "image/svg+xml"
-              );
-              return doc.querySelector("path");
-            })
-            .filter(Boolean);
-        }
-
-        paths.forEach((parsed, i) => {
-
-          const imported = document.createElementNS(
-            "http://www.w3.org/2000/svg",
-            "path"
-          );
-          for (const attr of parsed.attributes) {
-            imported.setAttribute(attr.name, attr.value);
-          }
-
-          svg.appendChild(imported);
-
-          if (typeof imported.getTotalLength !== "function") return;
-          const length = imported.getTotalLength();
-
-          imported.setAttribute("stroke-dasharray", length);
-          imported.setAttribute("stroke-dashoffset", length);
-          imported.setAttribute("stroke-width", "2");
-          imported.setAttribute("fill", "none");
-          imported.setAttribute("stroke", "currentColor");
-
-          const anim = document.createElementNS(
-            "http://www.w3.org/2000/svg",
-            "animate"
-          );
-          anim.setAttribute("attributeName", "stroke-dashoffset");
-          anim.setAttribute("from", length.toString());
-          anim.setAttribute("to", "0");
-          anim.setAttribute("dur", "0.25s");
-          anim.setAttribute("fill", "freeze");
-          anim.setAttribute("id", `b_anim${i + 1}`);
-          anim.setAttribute("begin", i === 0 ? "0s" : `b_anim${i}.end`);
-
-          imported.appendChild(anim);
-
-          if (typeof anim.beginElement !== "function") {
-            anim.remove();
-            imported.animate(
-              [{ strokeDashoffset: length }, { strokeDashoffset: 0 }],
-              {
-                duration: 250,
-                delay: i * 250,
-                fill: "forwards",
-                easing: "linear",
-              }
-            );
-          }
-        });
-
-        const firstAnim = svg.querySelector("animate");
-        if (firstAnim && typeof firstAnim.beginElement === "function") {
-          firstAnim.beginElement();
-        }
-
-        function formatXml(xml) {
-          return xml.replace(/></g, ">\n<").trim();
-        }
-
-        const rawSvg = svg.outerHTML;
-        const svgMarkup = formatXml(rawSvg);
-        document.getElementById("svgOutput").textContent = svgMarkup;
-      });
-    </script>
+    <script src="script.js"></script>
   </body>
 </html>
